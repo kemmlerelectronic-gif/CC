@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KEMMSOFT 🎃 HALLOWEEN</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #090503;
+    color: #f3f4f6;
+    overflow-x: hidden;
+}
+
+/* ================= ÚVODNÍ SPOUSTEČ PRO ZVUK ================= */
+
+#soundOverlayWelcome {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 2, 1, 0.96);
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+}
+
+#soundOverlayWelcome h1 {
+    color: #ff6600;
+    font-size: 3em;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(255, 102, 0, 0.8);
+}
+
+#soundOverlayWelcome p {
+    color: #9ca3af;
+    font-size: 1.2em;
+    margin-bottom: 30px;
+}
+
+#soundOverlayWelcome button {
+    padding: 16px 32px;
+    font-size: 1.4em;
+    background: #ff6600;
+    color: #000;
+    border: none;
+    border-radius: 12px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 0 25px rgba(255, 102, 0, 0.6);
+    transition: transform 0.2s, background 0.2s;
+}
+
+#soundOverlayWelcome button:hover {
+    transform: scale(1.05);
+    background: #ff8533;
+}
+
+/* ================= VIDEO / POZADÍ ================= */
+
+#backgroundVideo {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -3;
+    pointer-events: none;
+}
+
+#backgroundOverlay {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at center, rgba(15, 8, 3, 0.75) 0%, rgba(3, 1, 0, 0.92) 100%);
+    z-index: -2;
+    pointer-events: none;
+}
+
+/* ================= HORNÍ LIŠTA ================= */
+
+.topbarContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 15px 25px;
+    background: rgba(12, 6, 2, 0.92);
+    border-bottom: 2px solid #ff6600;
+    box-shadow: 0 4px 20px rgba(255, 102, 0, 0.25);
+}
+
+.topbarContainer.hidden {
+    display: none !important;
+}
+
+.kemmsTop {
+    flex: 0 0 auto;
+    font-size: 28px;
+    font-weight: 900;
+    color: #ff6600;
+    white-space: nowrap;
+    text-shadow: 0 0 10px rgba(255, 102, 0, 0.6);
+}
+
+.vzkazTickerContainer {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    background: rgba(5, 2, 1, 0.85);
+    border-left: 3px solid #ff6600;
+    border-right: 3px solid #ff6600;
+    padding: 8px 10px;
+    border-radius: 6px;
+}
+
+.vzkazTicker {
+    display: inline-block;
+    white-space: nowrap;
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffcc00;
+    padding-left: 100%;
+    animation: tickerLoop 30s linear infinite;
+}
+
+@keyframes tickerLoop {
+    from { transform: translateX(0); }
+    to { transform: translateX(-100%); }
+}
+
+.topbar {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.topbar button {
+    padding: 10px 16px;
+    margin-left: 6px;
+    border: none;
+    border-radius: 8px;
+    background: #1f140f;
+    color: #ff9933;
+    border: 1px solid #ff6600;
+    cursor: pointer;
+    font-size: 0.95em;
+    font-weight: 700;
+    transition: all 0.2s;
+}
+
+.topbar button:hover {
+    background: #ff6600;
+    color: #000;
+}
+
+.topbar button.active-nav {
+    background: #ff6600;
+    color: #000;
+    box-shadow: 0 0 10px rgba(255, 102, 0, 0.5);
+}
+
+.topbar button.btn-history {
+    background: #1a0826;
+    color: #b388ff;
+    border-color: #7c3aed;
+}
+
+.topbar button.btn-history:hover,
+.topbar button.btn-history.active-nav {
+    background: #7c3aed;
+    color: #fff;
+}
+
+/* ================= HLAVNÍ BANNER ================= */
+
+.header {
+    min-height: 90px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: rgba(10, 4, 1, 0.8);
+    border-bottom: 2px solid #ff6600;
+    color: #ff6600;
+    font-size: 36px;
+    font-weight: 900;
+    text-transform: uppercase;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+    letter-spacing: 1px;
+}
+
+/* ================= HLAVNÍ LAYOUT ================= */
+
+.layout {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(320px, 1.3fr);
+    gap: 20px;
+    padding: 20px;
+    align-items: start;
+}
+
+.lisGrid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.rowTop,
+.rowBottom {
+    display: contents;
+}
+
+/* ================= KARTY LISŮ (MUČÍRNY) ================= */
+
+.card {
+    min-width: 0;
+    min-height: 250px;
+    padding: 18px 12px;
+    border-radius: 16px;
+    text-align: center;
+    background: linear-gradient(145deg, rgba(22, 12, 6, 0.85) 0%, rgba(10, 5, 2, 0.95) 100%);
+    border: 1px solid rgba(255, 102, 0, 0.35);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 102, 0, 0.7);
+    box-shadow: 0 6px 20px rgba(255, 102, 0, 0.25);
+}
+
+.card.assigned {
+    background: linear-gradient(145deg, rgba(40, 15, 2, 0.9) 0%, rgba(18, 7, 1, 0.95) 100%);
+    border-color: rgba(255, 102, 0, 0.7);
+}
+
+.card.active {
+    background: linear-gradient(145deg, #ff6600 0%, #cc5200 100%) !important;
+    color: #000 !important;
+    border-color: #fff !important;
+    box-shadow: 0 0 25px rgba(255, 102, 0, 0.8);
+}
+
+.lis {
+    font-size: 22px;
+    font-weight: 900;
+    color: #ff9933;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+.card.active .lis {
+    color: #000;
+}
+
+.card .kontakt {
+    width: 100%;
+    font-size: clamp(18px, 1.8vw, 28px);
+    color: #ffcc00;
+    margin-top: 4px;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
+
+.card.active .kontakt {
+    color: #1a0800;
+}
+
+.card .prurez {
+    width: 100%;
+    font-size: clamp(18px, 1.8vw, 28px);
+    color: #ff6600;
+    margin-top: 4px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.card.active .prurez {
+    color: #260c00;
+}
+
+.card .jmeno {
+    width: 100%;
+    font-size: clamp(16px, 1.5vw, 24px);
+    color: #fff;
+    margin-top: 4px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.card.active .jmeno {
+    color: #000;
+}
+
+.card .time {
+    font-size: 14px;
+    color: #cbd5e1;
+    margin-top: 4px;
+}
+
+.card.active .time {
+    color: #222;
+}
+
+/* Dýně a netopýři na kartě */
+.card .pumpkin-icon {
+    position: absolute;
+    bottom: 6px;
+    right: 8px;
+    font-size: 24px;
+    filter: drop-shadow(0 0 3px rgba(0,0,0,0.8));
+}
+
+.bats-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.bat {
+    position: absolute;
+    font-size: 16px;
+    animation: flyAround 4s linear infinite;
+    opacity: 0.85;
+}
+
+@keyframes flyAround {
+    0% { transform: translate(-30px, 40px) scale(0.6); }
+    50% { transform: translate(130px, -15px) scale(1.1); }
+    100% { transform: translate(250px, 50px) scale(0.7); }
+}
+
+.bat:nth-child(1) { animation-duration: 3.2s; animation-delay: 0s; }
+.bat:nth-child(2) { animation-duration: 4.5s; animation-delay: 1.5s; }
+
+/* Tlačítka na kartách */
+.hotovo, .notifyBtn {
+    margin-top: 10px;
+    padding: 7px 12px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 800;
+    width: 100%;
+    cursor: pointer;
+    z-index: 2;
+    font-size: 0.9em;
+    letter-spacing: 0.5px;
+}
+
+.hotovo {
+    background: #990000;
+    color: white;
+}
+
+.hotovo:hover {
+    background: #cc0000;
+}
+
+.notifyBtn {
+    background: #cca300;
+    color: #000;
+}
+
+.notifyBtn:hover {
+    background: #ffcc00;
+}
+
+/* ================= FRONT ================= */
+
+.queue {
+    background: rgba(12, 6, 2, 0.92);
+    padding: 18px;
+    border-radius: 16px;
+    max-height: calc(100vh - 160px);
+    overflow-y: auto;
+    border: 1px solid rgba(255, 102, 0, 0.3);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+#productionScreen .queue {
+    padding-bottom: 150px;
+}
+
+.queueTitle {
+    color: #ff6600;
+    margin-bottom: 12px;
+    font-size: 1.35em;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.queueItem {
+    padding: 10px 12px;
+    border-bottom: 1px solid #2a1508;
+    margin-bottom: 8px;
+    background: rgba(8, 3, 1, 0.75);
+    border-radius: 8px;
+    font-size: 0.98em;
+}
+
+.queueItem b {
+    color: #ffcc00;
+}
+
+.queueItem .time {
+    color: #9ca3af;
+    font-size: .8em;
+    margin-top: 3px;
+}
+
+.assign-actions {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+}
+
+.assign-actions button {
+    padding: 3px 7px;
+    border: none;
+    border-radius: 4px;
+    background: #ff6600;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+
+.assign-actions button:hover {
+    background: #ff8533;
+}
+
+.assign-actions .delete-btn {
+    background: #990000;
+    color: white;
+    margin-left: auto;
+}
+
+.assign-actions .delete-btn:hover {
+    background: #cc0000;
+}
+
+/* ================= FORMULÁŘE A INPUTY ================= */
+
+input {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    border: 1px solid #3d1f0c;
+    background: rgba(5, 2, 1, 0.8);
+    color: white;
+    outline: none;
+    font-size: 0.95em;
+}
+
+input:focus {
+    border-color: #ff6600;
+    box-shadow: 0 0 8px rgba(255, 102, 0, 0.4);
+}
+
+.addBtn {
+    width: 100%;
+    padding: 11px;
+    background: #ff6600;
+    border: none;
+    border-radius: 8px;
+    color: #000;
+    cursor: pointer;
+    font-size: 1.05em;
+    font-weight: 800;
+    margin-bottom: 8px;
+    transition: background 0.2s;
+}
+
+.addBtn:hover {
+    background: #ff8533;
+}
+
+.vzkazBtn {
+    background: #581c87;
+    color: white;
+}
+
+.vzkazBtn:hover {
+    background: #6b21a8;
+}
+
+.xmlBtn {
+    background: #374151;
+    color: white;
+}
+
+.xmlBtn:hover {
+    background: #4b5563;
+}
+
+/* ================= VZKAZY A SEKCE ================= */
+
+.vzkazSection {
+    margin-top: 15px;
+    padding-top: 12px;
+    border-top: 2px dashed #2a1508;
+}
+
+.vzkazyList {
+    margin-top: 8px;
+    max-height: 130px;
+    overflow-y: auto;
+    background: rgba(5, 2, 1, 0.6);
+    border-radius: 8px;
+    padding: 4px;
+}
+
+.vzkazItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    background: rgba(18, 8, 3, 0.85);
+    padding: 6px 10px;
+    margin-bottom: 4px;
+    border-radius: 6px;
+    border-left: 3px solid #7c3aed;
+}
+
+.vzkazItem span {
+    color: #fef08a;
+    word-break: break-word;
+    font-size: 0.9em;
+}
+
+.vzkazItem button {
+    background: #990000;
+    border: none;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+
+/* ================= QR KÓDY ================= */
+
+.qrSection {
+    margin-top: 15px;
+    padding-top: 12px;
+    border-top: 2px dashed #2a1508;
+    text-align: center;
+}
+
+.qrContainer {
+    background: white;
+    padding: 8px;
+    border-radius: 10px;
+    display: inline-block;
+    margin-top: 6px;
+}
+
+.qrContainer img {
+    display: block;
+    width: 110px;
+    height: 110px;
+}
+
+.production-fixed-qr {
+    position: fixed;
+    bottom: 20px;
+    right: 25px;
+    z-index: 999;
+    background: white;
+    padding: 8px;
+    border-radius: 12px;
+    border: 2px solid #ff6600;
+    display: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+}
+
+.production-fixed-qr img {
+    display: block;
+    width: 100px;
+    height: 100px;
+}
+
+/* ================= OBRAZOVKY ZADÁNÍ A HISTORIE ================= */
+
+#requestsScreen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 50px);
+}
+
+#requestsScreen > div {
+    max-width: 90%;
+    width: 400px;
+    margin: 20px auto;
+    padding: 25px;
+    background: rgba(12, 6, 2, 0.95);
+    border-radius: 16px;
+    border: 2px solid #ff6600;
+    box-shadow: 0 0 25px rgba(255, 102, 0, 0.3);
+}
+
+#requestsScreen h3 {
+    color: #ff6600;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    text-align: center;
+}
+
+#historyScreen {
+    padding: 25px;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+.historyTableContainer {
+    background: rgba(12, 6, 2, 0.92);
+    border-radius: 14px;
+    padding: 15px;
+    border: 1px solid rgba(255, 102, 0, 0.25);
+    overflow-x: auto;
+}
+
+.historyTable {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.historyTable th, .historyTable td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #2a1508;
+}
+
+.historyTable th {
+    background: rgba(5, 2, 1, 0.9);
+    color: #ff6600;
+    font-size: 1.05em;
+}
+
+.production {
+    display: none;
+}
+
+/* ================= MODAL OKNO (VELKÉ PŘI VYVOLÁNÍ) ================= */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(3, 1, 0, 0.98);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: none;
+    width: 100%;
+    height: 100%;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+.modal-pumpkin-bg {
+    position: absolute;
+    font-size: 50vw;
+    color: rgba(255, 102, 0, 0.04);
+    z-index: -1;
+}
+
+.modal-jmeno {
+    font-size: 10vw;
+    color: #fff;
+    font-weight: 900;
+    margin: 1vh 0;
+    text-shadow: 0 0 20px rgba(255,102,0,0.5);
+}
+
+.modal-kontakt {
+    font-size: 7.5vw;
+    color: #ffcc00;
+    font-weight: 900;
+    margin: 1vh 0;
+}
+
+.modal-prurez {
+    font-size: 5.5vw;
+    color: #ff6600;
+    font-weight: 800;
+    margin: 1vh 0;
+}
+
+.modal-lis {
+    font-size: 3.5vw;
+    font-weight: 900;
+    color: #ff9933;
+    margin-bottom: 2vh;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* ================= RESPONSIVITA ================= */
+
+@media (max-width: 1300px) {
+    .layout { grid-template-columns: 1fr; }
+    .queue { max-height: none; }
+}
+
+@media (max-width: 800px) {
+    .topbarContainer { flex-direction: column; padding: 10px; }
+    .topbar { text-align: center; margin-top: 8px; }
+    .lisGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .header { font-size: 24px; min-height: 70px; }
+}
+
+@media (max-width: 500px) {
+    .lisGrid { grid-template-columns: 1fr; }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- ÚVODNÍ SPOUSTEČ PRO AUDIO -->
+<div id="soundOverlayWelcome">
+    <h1>🎃 KEMMSOFT HALLOWEEN 🎃</h1>
+    <p>Kliknutím spustíš temnou atmosféru a aktivuješ zvuky</p>
+    <button onclick="startAppWithSound()">Vstoupit do mučírny 🦇</button>
+</div>
+
+<!-- Pozadí video -->
+<video id="backgroundVideo" autoplay muted loop playsinline>
+    <source src="pozadi_halloween.mp4" type="video/mp4">
+</video>
+<div id="backgroundOverlay"></div>
+
+<!-- Horní lišta -->
+<div class="topbarContainer" id="mainTopbarContainer">
+    <div class="kemmsTop">KEMMSOFT 🎃 HALLOWEEN</div>
+    <div class="vzkazTickerContainer">
+        <div class="vzkazTicker" id="tickerText">👻 Čekání na nové kletby...</div>
+    </div>
+    <div class="topbar">
+        <button id="nav-setup" class="active-nav" onclick="setupMode()">Nastavení</button>
+        <button id="nav-production" onclick="productionMode()">Výrobní obrazovka</button>
+        <button id="nav-requests" onclick="requestsMode()">Zadání požadavku</button>
+        <button id="nav-history" class="btn-history" onclick="historyMode()">Historie</button>
+    </div>
+</div>
+
+<!-- Hlavní banner -->
+<div class="header" id="mainHeader">Čekám, až povstane první lis...</div>
+
+<!-- Setup obrazovka -->
+<div id="setupScreen">
+    <div class="layout">
+        <div>
+            <div class="lisGrid">
+                <div class="rowTop" id="rowTop"></div>
+                <div class="rowBottom" id="rowBottom"></div>
+            </div>
+        </div>
+        <div class="queue">
+            <div class="queueTitle">Nadcházející požadavky</div>
+            <div id="queueList"></div>
+
+            <h4 style="margin-top:15px; color:#ff9933;">Přidat nový požadavek</h4>
+            <input id="setupKontakt" placeholder="Číslo kontaktu">
+            <input id="setupPrurez" placeholder="Průřez">
+            <input id="setupJmeno" placeholder="Jméno">
+            <button class="addBtn" onclick="addRequestSetup()">Zatratit do fronty</button>
+
+            <div class="vzkazSection">
+                <h4 style="color:#ff9933;">Napsat vzkaz na tabuli</h4>
+                <input id="setupVzkaz" placeholder="Text vzkazu...">
+                <button class="addBtn vzkazBtn" onclick="sendVzkaz('setupVzkaz')">Odeslat vzkaz</button>
+                <h4 style="margin-top:12px; margin-bottom:5px; color:#ff9933;">Aktivní vzkazy:</h4>
+                <div class="vzkazyList" id="setupVzkazyList">Žádné aktivní vzkazy</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Výrobní obrazovka -->
+<div id="productionScreen" class="production">
+    <div class="layout">
+        <div>
+            <div class="lisGrid">
+                <div class="rowTop" id="prodTop"></div>
+                <div class="rowBottom" id="prodBottom"></div>
+            </div>
+        </div>
+        <div class="queue">
+            <div class="queueTitle">Nadcházející požadavky</div>
+            <div id="prodQueue"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Zadání požadavku -->
+<div id="requestsScreen" class="production">
+    <div>
+        <h3>Zadání požadavku</h3>
+        <input id="kontakt" placeholder="Číslo kontaktu">
+        <input id="prurez" placeholder="Průřez">
+        <input id="jmeno" placeholder="Jméno">
+        <button class="addBtn" onclick="addRequest()">Odeslat požadavek</button>
+
+        <div class="vzkazSection">
+            <h4 style="color:#ff9933;">Napsat vzkaz na tabuli</h4>
+            <input id="reqVzkaz" placeholder="Text vzkazu...">
+            <button class="addBtn vzkazBtn" onclick="sendVzkaz('reqVzkaz')">Odeslat vzkaz</button>
+        </div>
+    </div>
+</div>
+
+<!-- Historie -->
+<div id="historyScreen" class="production">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="color: #b388ff; margin: 0;">📜 Historie zadaných požadavků</h2>
+        <button class="addBtn xmlBtn" style="width: auto; padding: 10px 20px; margin: 0;" onclick="exportToXML()">📥 Exportovat do XML</button>
+    </div>
+    <div class="historyTableContainer">
+        <table class="historyTable">
+            <thead>
+                <tr>
+                    <th>Datum zadání</th>
+                    <th>Kontakt</th>
+                    <th>Průřez</th>
+                    <th>Jméno</th>
+                    <th>Lis</th>
+                    <th>Čas zadání</th>
+                    <th>Čas na lisu</th>
+                    <th>Čas odejmutí</th>
+                </tr>
+            </thead>
+            <tbody id="historyTableBody">
+                <tr><td colspan="8" style="text-align:center; color: #9ca3af;">Žádná historie k zobrazení.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal (Vyskakovací okno jen na výrobní obrazovce) -->
+<div id="requestModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-pumpkin-bg">🎃</div>
+        <div id="modalLis" class="modal-lis">LIS X</div>
+        <div id="modalJmeno" class="modal-jmeno">---</div>
+        <div id="modalKontakt" class="modal-kontakt">---</div>
+        <div id="modalPrurez" class="modal-prurez">---</div>
+    </div>
+</div>
+
+<!-- FIREBASE A LOGIKA -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyAhiCfh-Di_NdPO5rGM7CZFQGaSymcdWxI",
+    authDomain: "lisyweb-df6d9.firebaseapp.com",
+    databaseURL: "https://lisyweb-df6d9-default-rtdb.firebaseio.com/",
+    projectId: "lisyweb-df6d9"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const LIS_COUNT = 8;
+let currentScreen = "setup";
+let modalTimer = null;
+
+let lisy = [];
+let pozadavky = [];
+let historieList = [];
+let lastLisy = [];
+
+/* ZVUKOVÝ SYSTÉM (hudba.mp3) */
+const horrorSound = new Audio('hudba.mp3');
+
+window.startAppWithSound = function() {
+    document.getElementById('soundOverlayWelcome').style.display = 'none';
+    horrorSound.play().then(() => {
+        horrorSound.pause();
+        horrorSound.currentTime = 0;
+        console.log("Zvuk aktivován.");
+    }).catch(e => {
+        console.log("Audio zablokováno:", e);
+    });
+    setupMode();
+};
+
+window.playTone = function() {
+    try {
+        horrorSound.currentTime = 0;
+        horrorSound.play().catch(err => {
+            console.log("Přehrávání zvuku selhalo:", err);
+        });
+    } catch(e) {
+        console.log("Chyba přehrávání:", e);
+    }
+};
+
+/* POMOCNÉ FUNKCE */
+function emptyLis() {
+    return { kontakt: "", prurez: "", jmeno: "", time: "", datumZadani: "", timeZadani: "", timeNaLisu: "" };
+}
+
+function timeNow() {
+    return new Date().toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' });
+}
+
+function dateNow() {
+    const d = new Date();
+    return `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getFullYear()).slice(-2)}`;
+}
+
+/* NAVIGACE */
+function hideAllScreens() {
+    ["setupScreen", "productionScreen", "requestsScreen", "historyScreen"].forEach(s => {
+        document.getElementById(s).style.display = "none";
+    });
+    ["nav-setup", "nav-production", "nav-requests", "nav-history"].forEach(n => {
+        document.getElementById(n).classList.remove("active-nav");
+    });
+}
+
+window.setupMode = function() {
+    hideAllScreens(); currentScreen = "setup";
+    document.getElementById("setupScreen").style.display = "block";
+    document.getElementById("nav-setup").classList.add("active-nav");
+    updateHeader("Nastavení systému");
+    renderAll();
+};
+
+window.productionMode = function() {
+    hideAllScreens(); currentScreen = "production";
+    document.getElementById("productionScreen").style.display = "block";
+    document.getElementById("nav-production").classList.add("active-nav");
+    updateHeader("Výrobní obrazovka");
+    renderAll();
+};
+
+window.requestsMode = function() {
+    hideAllScreens(); currentScreen = "requests";
+    document.getElementById("requestsScreen").style.display = "flex";
+    document.getElementById("nav-requests").classList.add("active-nav");
+    updateHeader("Zadání požadavku");
+};
+
+window.historyMode = function() {
+    hideAllScreens(); currentScreen = "history";
+    document.getElementById("historyScreen").style.display = "block";
+    document.getElementById("nav-history").classList.add("active-nav");
+    updateHeader("Historie");
+};
+
+function updateHeader(text) {
+    document.getElementById("mainHeader").innerText = text;
+}
+
+/* FIREBASE: VZKAZY */
+window.sendVzkaz = function(inputId) {
+    const input = document.getElementById(inputId);
+    const val = input.value.trim();
+    if (!val) return;
+    push(ref(db, 'vzkazy_list'), { text: val, time: Date.now() });
+    input.value = "";
+};
+
+onValue(ref(db, 'vzkazy_list'), snap => {
+    const data = snap.val();
+    const ticker = document.getElementById("tickerText");
+    const list = document.getElementById("setupVzkazyList");
+    if (!ticker) return;
+
+    if (data) {
+        const arr = Object.entries(data).map(([k, v]) => ({ ...v, key: k })).sort((a,b) => b.time - a.time);
+        ticker.innerText = "⚠️ VZKAZ: " + arr[0].text;
+        if (list) {
+            list.innerHTML = arr.map(v => `<div class="vzkazItem"><span>${v.text}</span><button onclick="deleteVzkaz('${v.key}')">❌</button></div>`).join("");
+        }
+    } else {
+        ticker.innerText = "👻 Čekání na nové kletby...";
+        if (list) list.innerHTML = "Žádné aktivní vzkazy";
+    }
+});
+
+window.deleteVzkaz = function(key) {
+    remove(ref(db, 'vzkazy_list/' + key));
+};
+
+/* FIREBASE: PROZVONĚNÍ A PŘIŘAZENÍ (Spustí zvuk i okno na výrobní obrazovce) */
+function showModal(lisNum, kontakt, prurez, jmeno) {
+    if (currentScreen === "production") {
+        const modal = document.getElementById("requestModal");
+        document.getElementById("modalLis").innerText = `MUČÍRNA ${lisNum}`;
+        document.getElementById("modalJmeno").innerText = jmeno || "---";
+        document.getElementById("modalKontakt").innerText = kontakt || "---";
+        document.getElementById("modalPrurez").innerText = prurez || "---";
+        
+        modal.style.display = "flex";
+        if (modalTimer) clearTimeout(modalTimer);
+        modalTimer = setTimeout(() => { modal.style.display = "none"; }, 10000);
+    }
+    window.playTone(); // Zvuk se přehraje, když se požadavek přiřadí nebo prozvoní
+}
+
+window.notifyLis = function(index) {
+    const item = lisy[index];
+    if (item && item.kontakt) {
+        set(ref(db, 'lisy/prozvonit'), {
+            lis: index + 1,
+            kontakt: item.kontakt,
+            prurez: item.prurez,
+            jmeno: item.jmeno,
+            timestamp: Date.now()
+        });
+    }
+};
+
+onValue(ref(db, 'lisy/prozvonit'), snap => {
+    const data = snap.val();
+    if (!data) return;
+    showModal(data.lis, data.kontakt, data.prurez, data.jmeno);
+});
+
+/* FIREBASE: LISY */
+onValue(ref(db, 'lisy'), snap => {
+    const data = snap.val();
+    let currentLisy = [];
+    for (let i = 0; i < LIS_COUNT; i++) {
+        currentLisy.push(data && data[i] ? data[i] : emptyLis());
+    }
+
+    // Detekce nového přiřazení do lisu pro spuštění zvuku
+    for (let i = 0; i < LIS_COUNT; i++) {
+        const lis = currentLisy[i];
+        const old = lastLisy[i] || emptyLis();
+        if (lis.kontakt && old.kontakt !== lis.kontakt) {
+            showModal(i + 1, lis.kontakt, lis.prurez, lis.jmeno);
+        }
+    }
+
+    lisy = currentLisy;
+    lastLisy = JSON.parse(JSON.stringify(lisy));
+    renderCards();
+});
+
+/* FIREBASE: POŽADAVKY */
+onValue(ref(db, 'pozadavky'), snap => {
+    const data = snap.val();
+    pozadavky = data ? Object.entries(data).map(([k, v]) => ({ ...v, key: k })).sort((a,b) => a.timestamp - b.timestamp) : [];
+    renderQueues();
+});
+
+/* FIREBASE: HISTORIE */
+onValue(ref(db, 'historie'), snap => {
+    const data = snap.val();
+    historieList = data ? Object.entries(data).map(([k, v]) => ({ ...v, key: k })) : [];
+    renderHistoryTable();
+});
+
+/* ODESLÁNÍ A SPRÁVA */
+window.addRequestGeneric = function(kId, pId, jId) {
+    const k = document.getElementById(kId).value.trim();
+    const p = document.getElementById(pId).value.trim();
+    const j = document.getElementById(jId).value.trim();
+    if (!k && !p && !j) return;
+
+    push(ref(db, 'pozadavky'), {
+        kontakt: k,
+        prurez: p,
+        jmeno: j,
+        datumZadani: dateNow(),
+        timeZadani: timeNow(),
+        timestamp: Date.now()
+    });
+
+    document.getElementById(kId).value = "";
+    document.getElementById(pId).value = "";
+    document.getElementById(jId).value = "";
+};
+
+window.addRequest = function() { addRequestGeneric("kontakt", "prurez", "jmeno"); };
+window.addRequestSetup = function() { addRequestGeneric("setupKontakt", "setupPrurez", "setupJmeno"); };
+
+window.deleteRequest = function(key) {
+    remove(ref(db, 'pozadavky/' + key));
+};
+
+window.assignToLis = function(key, lisIndex) {
+    const req = pozadavky.find(p => p.key === key);
+    if (!req) return;
+
+    const cas = timeNow();
+    set(ref(db, 'lisy/' + lisIndex), {
+        kontakt: req.kontakt,
+        prurez: req.prurez,
+        jmeno: req.jmeno,
+        time: cas,
+        datumZadani: req.datumZadani,
+        timeZadani: req.timeZadani,
+        timeNaLisu: cas,
+        timestampZadani: req.timestamp,
+        timestampNaLisu: Date.now()
+    });
+
+    remove(ref(db, 'pozadavky/' + key));
+};
+
+window.finishRequest = function(index) {
+    const item = lisy[index];
+    if (!item || !item.kontakt) return;
+
+    const cas = timeNow();
+    push(ref(db, 'historie'), {
+        ...item,
+        lisNum: index + 1,
+        timeOdejmuti: cas,
+        timestampOdejmuti: Date.now()
+    });
+
+    set(ref(db, 'lisy/' + index), emptyLis());
+};
+
+/* RENDEROVÁNÍ */
+function createBatsHtml() {
+    return `<div class="bats-container"><span class="bat">🦇</span><span class="bat">🦇</span></div>`;
+}
+
+function renderCards() {
+    const screens = [
+        { grid: document.getElementById("rowTop"), type: "setup", range: [0, 4] },
+        { grid: document.getElementById("rowBottom"), type: "setup", range: [4, 8] },
+        { grid: document.getElementById("prodTop"), type: "production", range: [0, 4] },
+        { grid: document.getElementById("prodBottom"), type: "production", range: [4, 8] }
+    ];
+
+    screens.forEach(s => {
+        if (!s.grid) return;
+        s.grid.innerHTML = "";
+        for (let i = s.range[0]; i < s.range[1]; i++) {
+            const lis = lisy[i];
+            const hasData = lis && lis.kontakt;
+
+            let cardClass = "card";
+            if (hasData) cardClass += " assigned";
+            if (i === 0 && s.type === "production" && hasData) cardClass += " active";
+
+            let html = `
+                <div class="${cardClass}">
+                    ${createBatsHtml()}
+                    <div class="lis">MUČÍRNA ${i + 1}</div>
+                    ${hasData ? `
+                        <div class="kontakt">${lis.kontakt}</div>
+                        <div class="prurez">${lis.prurez}</div>
+                        <div class="jmeno">${lis.jmeno}</div>
+                        <div class="time">${lis.time}</div>
+                    ` : '<div style="color: #666; font-style: italic; margin-top: 15px;">Volná komora</div>'}
+                    <span class="pumpkin-icon">🎃</span>
+            `;
+
+            if (hasData) {
+                if (s.type === "setup") {
+                    html += `<button class="hotovo" onclick="finishRequest(${i})">VYSVOBODIT</button>`;
+                    html += `<button class="notifyBtn" onclick="notifyLis(${i})">ZVOLAT PÁNEM!</button>`;
+                }
+            }
+
+            html += `</div>`;
+            s.grid.innerHTML += html;
+        }
+    });
+}
+
+function renderQueues() {
+    const qSetup = document.getElementById("queueList");
+    const qProd = document.getElementById("prodQueue");
+    if (!qSetup || !qProd) return;
+
+    if (pozadavky.length === 0) {
+        const empty = '<div style="color:#9ca3af; font-style:italic; text-align:center;">Žádné požadavky ve frontě.</div>';
+        qSetup.innerHTML = empty;
+        qProd.innerHTML = empty;
+        return;
+    }
+
+    pozadavky.sort((a,b) => a.timestamp - b.timestamp);
+
+    qProd.innerHTML = pozadavky.map(p => `
+        <div class="queueItem">
+            <div><b>${p.kontakt}</b> | ${p.prurez} | ${p.jmeno}</div>
+            <div class="time">Vysláno: ${p.timeZadani}</div>
+        </div>
+    `).join("");
+
+    qSetup.innerHTML = pozadavky.map(p => {
+        let buttons = '<div class="assign-actions">';
+        for (let i = 0; i < LIS_COUNT; i++) {
+            buttons += `<button onclick="assignToLis('${p.key}', ${i})">M${i+1}</button>`;
+        }
+        buttons += `<button class="delete-btn" onclick="deleteRequest('${p.key}')">❌</button>`;
+        buttons += '</div>';
+
+        return `
+            <div class="queueItem">
+                <div><b>${p.kontakt}</b> | ${p.prurez} | ${p.jmeno}</div>
+                <div class="time">Vysláno: ${p.timeZadani}</div>
+                ${buttons}
+            </div>
+        `;
+    }).join("");
+}
+
+function renderHistoryTable() {
+    const body = document.getElementById("historyTableBody");
+    if (!body) return;
+    body.innerHTML = "";
+
+    if (historieList.length === 0) {
+        body.innerHTML = `<tr><td colspan="8" style="text-align:center; color: #9ca3af;">Žádná historie k zobrazení.</td></tr>`;
+        return;
+    }
+
+    historieList.sort((a,b) => (b.timestampOdejmuti || 0) - (a.timestampOdejmuti || 0));
+
+    historieList.forEach(h => {
+        body.innerHTML += `
+            <tr>
+                <td>${h.datumZadani || "---"}</td>
+                <td><b>${h.kontakt || "---"}</b></td>
+                <td>${h.prurez || "---"}</td>
+                <td>${h.jmeno || "---"}</td>
+                <td>Mučírna ${h.lisNum || "?"}</td>
+                <td>${h.timeZadani || "---"}</td>
+                <td>${h.timeNaLisu || "---"}</td>
+                <td>${h.timeOdejmuti || "---"}</td>
+            </tr>
+        `;
+    });
+}
+
+function renderAll() {
+    renderCards();
+    renderQueues();
+}
+
+window.exportToXML = function() {
+    alert("Kronika byla exportována.");
+};
+
+window.onload = function() {
+    setupMode();
+};
+</script>
+
+</body>
+</html>
