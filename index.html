@@ -24,52 +24,6 @@ body {
     overflow-x: hidden;
 }
 
-/* ================= ÚVODNÍ SPOUSTEČ PRO ZVUK ================= */
-
-#soundOverlayWelcome {
-    position: fixed;
-    inset: 0;
-    background: rgba(5, 2, 1, 0.96);
-    z-index: 99999;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 20px;
-}
-
-#soundOverlayWelcome h1 {
-    color: #ff6600;
-    font-size: 3em;
-    margin-bottom: 10px;
-    text-shadow: 0 0 20px rgba(255, 102, 0, 0.8);
-}
-
-#soundOverlayWelcome p {
-    color: #9ca3af;
-    font-size: 1.2em;
-    margin-bottom: 30px;
-}
-
-#soundOverlayWelcome button {
-    padding: 16px 32px;
-    font-size: 1.4em;
-    background: #ff6600;
-    color: #000;
-    border: none;
-    border-radius: 12px;
-    font-weight: 900;
-    cursor: pointer;
-    box-shadow: 0 0 25px rgba(255, 102, 0, 0.6);
-    transition: transform 0.2s, background 0.2s;
-}
-
-#soundOverlayWelcome button:hover {
-    transform: scale(1.05);
-    background: #ff8533;
-}
-
 /* ================= VIDEO / POZADÍ ================= */
 
 #backgroundVideo {
@@ -757,13 +711,6 @@ input:focus {
 
 <body>
 
-<!-- ÚVODNÍ SPOUSTEČ PRO AUDIO -->
-<div id="soundOverlayWelcome">
-    <h1>🎃 KEMMSOFT HALLOWEEN 🎃</h1>
-    <p>Kliknutím spustíš temnou atmosféru a aktivuješ zvuky</p>
-    <button onclick="startAppWithSound()">Vstoupit do mučírny 🦇</button>
-</div>
-
 <!-- Pozadí video -->
 <video id="backgroundVideo" autoplay muted loop playsinline>
     <source src="pozadi_halloween.mp4" type="video/mp4">
@@ -915,26 +862,25 @@ let lastLisy = [];
 /* ZVUKOVÝ SYSTÉM (hudba.mp3) */
 const horrorSound = new Audio('hudba.mp3');
 
-window.startAppWithSound = function() {
-    document.getElementById('soundOverlayWelcome').style.display = 'none';
+// Pokusí se odblokovat přehrávání zvuku po prvním kliknutí kamkoliv
+document.addEventListener('click', () => {
     horrorSound.play().then(() => {
         horrorSound.pause();
         horrorSound.currentTime = 0;
-        console.log("Zvuk aktivován.");
+        console.log("🔊 Zvukový systém úspěšně odblokován uživatelským kliknutím.");
     }).catch(e => {
-        console.log("Audio zablokováno:", e);
+        console.warn("⚠️ Přehrávání zvuku bylo blokováno:", e);
     });
-    setupMode();
-};
+}, { once: true });
 
 window.playTone = function() {
     try {
         horrorSound.currentTime = 0;
         horrorSound.play().catch(err => {
-            console.log("Přehrávání zvuku selhalo:", err);
+            console.error("❌ Přehrávání zvuku selhalo (zkontrolujte, zda existuje soubor hudba.mp3):", err);
         });
     } catch(e) {
-        console.log("Chyba přehrávání:", e);
+        console.error("❌ Chyba při spouštění zvuku:", e);
     }
 };
 
@@ -1027,7 +973,7 @@ window.deleteVzkaz = function(key) {
     remove(ref(db, 'vzkazy_list/' + key));
 };
 
-/* FIREBASE: PROZVONĚNÍ A PŘIŘAZENÍ (Spustí zvuk i okno na výrobní obrazovce) */
+/* FIREBASE: PROZVONĚNÍ A PŘIŘAZENÍ */
 function showModal(lisNum, kontakt, prurez, jmeno) {
     if (currentScreen === "production") {
         const modal = document.getElementById("requestModal");
@@ -1040,7 +986,7 @@ function showModal(lisNum, kontakt, prurez, jmeno) {
         if (modalTimer) clearTimeout(modalTimer);
         modalTimer = setTimeout(() => { modal.style.display = "none"; }, 10000);
     }
-    window.playTone(); // Zvuk se přehraje, když se požadavek přiřadí nebo prozvoní
+    window.playTone();
 }
 
 window.notifyLis = function(index) {
@@ -1070,7 +1016,6 @@ onValue(ref(db, 'lisy'), snap => {
         currentLisy.push(data && data[i] ? data[i] : emptyLis());
     }
 
-    // Detekce nového přiřazení do lisu pro spuštění zvuku
     for (let i = 0; i < LIS_COUNT; i++) {
         const lis = currentLisy[i];
         const old = lastLisy[i] || emptyLis();
@@ -1261,35 +1206,31 @@ function renderHistoryTable() {
     }
 
     historieList.sort((a,b) => (b.timestampOdejmuti || 0) - (a.timestampOdejmuti || 0));
-
-    historieList.forEach(h => {
-        body.innerHTML += `
-            <tr>
-                <td>${h.datumZadani || "---"}</td>
-                <td><b>${h.kontakt || "---"}</b></td>
-                <td>${h.prurez || "---"}</td>
-                <td>${h.jmeno || "---"}</td>
-                <td>Mučírna ${h.lisNum || "?"}</td>
-                <td>${h.timeZadani || "---"}</td>
-                <td>${h.timeNaLisu || "---"}</td>
-                <td>${h.timeOdejmuti || "---"}</td>
-            </tr>
-        `;
-    });
+    
+    body.innerHTML = historieList.map(h => `
+        <tr>
+            <td>${h.datumZadani || '---'}</td>
+            <td><b>${h.kontakt || '---'}</b></td>
+            <td>${h.prurez || '---'}</td>
+            <td>${h.jmeno || '---'}</td>
+            <td>MUČÍRNA ${h.lisNum || '?'}</td>
+            <td>${h.timeZadani || '---'}</td>
+            <td>${h.timeNaLisu || '---'}</td>
+            <td>${h.timeOdejmuti || '---'}</td>
+        </tr>
+    `).join("");
 }
 
 function renderAll() {
     renderCards();
     renderQueues();
+    renderHistoryTable();
 }
 
-window.exportToXML = function() {
-    alert("Kronika byla exportována.");
-};
-
-window.onload = function() {
+// Spuštění výchozí obrazovky hned po načtení
+window.addEventListener('DOMContentLoaded', () => {
     setupMode();
-};
+});
 </script>
 
 </body>
